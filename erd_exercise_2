@@ -1,0 +1,40 @@
+// DMBL code submitted for Exercise 2 of ERD exercises
+
+Table customers {
+    cust_id integer [primary key, increment]
+    first_name varchar(100)
+    last_name varchar(100)
+    email_address varchar(100)
+}
+
+Table chat_messages {
+  message_id integer [primary key, increment]
+  message_body varchar(200) 
+  message_left_at timestamp // just to display to users / needed to sort? (not part of brief)
+  prof_id_fk integer 
+  group_chat_room_id_fk integer
+}
+
+Table profiles {
+  prof_id integer [primary key, increment]
+  cust_id_fk integer [unique, not null, ref: - customers.cust_id]
+  prof_img_url varchar // url to s3
+  prof_bio_body varchar(1000)
+}
+
+Table group_chat_rooms { // Assumes chats cannot move between rooms/no need for historic records
+  group_chat_room_id integer [primary key, increment]
+  group_chat_room_display_name varchar(100)
+  last_message_left_at timestamp // updated independently, every time a message left
+  is_archived boolean 
+}
+
+Table customers_present_in_chat_rooms {
+  customer_id_fk integer
+  group_chat_room_fk integer
+}
+
+Ref: chat_messages.prof_id_fk > profiles.prof_id
+Ref: customers_present_in_chat_rooms.customer_id_fk > customers.cust_id
+Ref: customers_present_in_chat_rooms.group_chat_room_fk > group_chat_rooms.group_chat_room_id
+
